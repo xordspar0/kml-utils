@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+# radius.py: a wsgi script that serves a KML document that contains a placemark
+# in a random position on a circle around another point.
+
 def application(environ, start_response):
     output_kml = kml_radius(40, -100, 5)
 

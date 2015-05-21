@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <kml xmlns="http://www.opengis.net/kml/2.2">
+<!--This KML document is simply a showcase of things I have learned about KML-->
 	<Folder>
+		<description>This collection is simply a showcase of things I have learned about KML</description>
 		<Placemark>
 			<name>USA</name>
 			<Point>
@@ -8,6 +10,8 @@
 			</Point>
 		</Placemark>
 		<NetworkLink>
+			<name>NetworkLink</name>
+			<description>Get a Placemark from a server every 5 seconds</description>
 			<Link>
 				<href>http://bear.k.vu/wsgi/radius.kml</href>
 				<refreshMode>onInterval</refreshMode>
