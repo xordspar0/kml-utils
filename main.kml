@@ -13,7 +13,7 @@
 			<name>NetworkLink</name>
 			<description>Get a Placemark from a server every 5 seconds</description>
 			<Link>
-				<href>http://bear.k.vu/wsgi/radius.kml</href>
+				<href>http://bang.k.vu/wsgi/radius.kml</href>
 				<refreshMode>onInterval</refreshMode>
 				<refreshInterval>5</refreshInterval>
 			</Link>
