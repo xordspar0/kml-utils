@@ -3,8 +3,8 @@
 # Written by Jordan Christiansen                                     #
 # Created: 21 May 2015                                               #
 ######################################################################
-# Read a list of global coordinates from a CSV file and              #
-# translates it into a KML file.                                     #
+# Read a list of global coordinates from a CSV file and translates   #
+# it into a KML file.                                                #
 #                                                                    #
 ######################################################################
 
@@ -15,6 +15,7 @@
 # Placemarks (e.g. paths).
 ##
 
+import re
 import sys
 
 # The text of the resulting KML document.
@@ -25,19 +26,27 @@ body = ''
 footer = ('</Folder>\n'
           '</kml>\n')
 
+# Regular expressions for parsing the CSV file.
+# Note that the delimiter can be a tab, a comma, or whitespace.
+decimal = '-?[0-9]+(.[0-9]+)?'
+delimiter = '[\t, +]'
+line_validation = re.compile(decimal + delimiter + decimal)
+splitter = re.compile(delimiter)
+
 for input_file in sys.argv[1:]:
     with open(input_file) as csv_file:
         for line in csv_file:
+            if (line_validation.match(line)):
 
-            longitude = line.split('\t')[0]
-            latitude = line.split('\t')[1]
+                longitude = splitter.split(line)[0]
+                latitude = splitter.split(line)[1]
 
-            body = body + (('\t<Placemark>\n'
-                            '\t\t<Point>\n'
-                            '\t\t\t<coordinates>{0},{1}</coordinates\n'
-                            '\t\t</Point>\n'
-                            '\t</Placemark>\n'
-                            ).format(longitude, latitude))
+                body = body + (('\t<Placemark>\n'
+                                '\t\t<Point>\n'
+                                '\t\t\t<coordinates>{0},{1}</coordinates>\n'
+                                '\t\t</Point>\n'
+                                '\t</Placemark>\n'
+                                ).format(longitude, latitude))
 
 print(header + body + footer)
         
