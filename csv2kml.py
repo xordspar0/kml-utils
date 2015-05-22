@@ -3,20 +3,24 @@
 # Written by Jordan Christiansen                                     #
 # Created: 21 May 2015                                               #
 ######################################################################
-# Read a list of global coordinates from a CSV file and translates   #
-# it into a KML file.                                                #
+# Read a list of global coordinates from a CSV file and translate it #
+# into a KML file.                                                   #
 #                                                                    #
 ######################################################################
 
 ## TODO:
-# Use an XML library to emit the KML document rather than plain strings.
-#
 # Possible future feature: convert the coordinates to things other than
 # Placemarks (e.g. paths).
 ##
 
 import re
 import sys
+
+usage_message = 'Usage: {} {{CSV File}} Output'.format(sys.argv[0])
+
+if len(sys.argv) < 3:
+    print(usage_message, file=sys.stderr)
+    exit()
 
 # The text of the resulting KML document.
 header = ('<?xml version="1.0" encoding="UTF-8"?>\n'
@@ -33,9 +37,9 @@ delimiter = '[\t, +]'
 line_validation = re.compile(decimal + delimiter + decimal)
 splitter = re.compile(delimiter)
 
-for input_file in sys.argv[1:]:
-    with open(input_file) as csv_file:
-        for line in csv_file:
+for input_file in sys.argv[1:-1]:
+    with open(input_file) as current_file:
+        for line in current_file:
             if (line_validation.match(line)):
 
                 longitude = splitter.split(line)[0]
@@ -48,5 +52,6 @@ for input_file in sys.argv[1:]:
                                 '\t</Placemark>\n'
                                 ).format(longitude, latitude))
 
-print(header + body + footer)
-        
+with open(sys.argv[-1], 'x') as output_file:
+    output_file.write(header + body + footer)
+
