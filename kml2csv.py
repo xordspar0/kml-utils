@@ -21,9 +21,16 @@ coordinates = kml.findall('.//{http://www.opengis.net/kml/2.2}coordinates')
 
 with open(sys.argv[2], 'w') as output_file:
     for coordinate in coordinates:
-        longitude = coordinate.text.split(',')[0]
-        latitude = coordinate.text.split(',')[1]
-        #altitude = coordinate.text.split(',')[2]
+        output_string = ""
+        split_coordinates = coordinate.text.split(',')
+        
+        if len(split_coordinates) >= 2:
+            longitude = split_coordinates[0]
+            latitude = split_coordinates[1]
+            output_string += longitude + '\t' + latitude
+        if len(split_coordinates) >= 3:
+            altitude = split_coordinates[2]
+            output_string += '\t' + altitude
 
-        output_file.write(longitude + '\t' + latitude)
+        output_file.write(output_string)
 
