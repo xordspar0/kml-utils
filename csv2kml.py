@@ -42,8 +42,8 @@ for input_file in sys.argv[1:-1]:
         for line in current_file:
             if (line_validation.match(line)):
 
-                longitude = splitter.split(line)[0]
-                latitude = splitter.split(line)[1]
+                longitude = splitter.split(line.strip())[0]
+                latitude = splitter.split(line.strip())[1]
 
                 body = body + ('\t<Placemark>\n'
                                '\t\t<Point>\n'
@@ -52,6 +52,6 @@ for input_file in sys.argv[1:-1]:
                                '\t</Placemark>\n'
                                ).format(longitude, latitude)
 
-with open(sys.argv[-1], 'x') as output_file:
+with open(sys.argv[-1], 'w') as output_file:
     output_file.write(header + body + footer)
 

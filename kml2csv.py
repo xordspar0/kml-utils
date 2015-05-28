@@ -18,14 +18,13 @@ if len(sys.argv) < 3:
 
 coordinates = []
 for input_file in sys.argv[1:-1]:
-    print(input_file)
     kml = ElementTree.parse(input_file)
     coordinates += kml.findall('.//{http://www.opengis.net/kml/2.2}coordinates')
 
 with open(sys.argv[-1], 'w') as output_file:
     for coordinate in coordinates:
         output_string = ""
-        split_coordinates = coordinate.text.split(',')
+        split_coordinates = coordinate.text.strip().split(',')
         
         if len(split_coordinates) >= 2:
             longitude = split_coordinates[0]
@@ -35,5 +34,5 @@ with open(sys.argv[-1], 'w') as output_file:
             altitude = split_coordinates[2]
             output_string += '\t' + altitude
 
-        output_file.write(output_string)
+        output_file.write(output_string + '\n')
 
