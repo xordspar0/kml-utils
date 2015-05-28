@@ -45,12 +45,12 @@ for input_file in sys.argv[1:-1]:
                 longitude = splitter.split(line)[0]
                 latitude = splitter.split(line)[1]
 
-                body = body + (('\t<Placemark>\n'
-                                '\t\t<Point>\n'
-                                '\t\t\t<coordinates>{0},{1}</coordinates>\n'
-                                '\t\t</Point>\n'
-                                '\t</Placemark>\n'
-                                ).format(longitude, latitude))
+                body = body + ('\t<Placemark>\n'
+                               '\t\t<Point>\n'
+                               '\t\t\t<coordinates>{0},{1}</coordinates>\n'
+                               '\t\t</Point>\n'
+                               '\t</Placemark>\n'
+                               ).format(longitude, latitude)
 
 with open(sys.argv[-1], 'x') as output_file:
     output_file.write(header + body + footer)

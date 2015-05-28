@@ -10,16 +10,19 @@
 import sys
 from xml.etree import ElementTree
 
-usage_message = 'Usage: {} KML_FILE OUTPUT'.format(sys.argv[0])
+usage_message = 'Usage: {} {{KML_FILE}} OUTPUT'.format(sys.argv[0])
 
-if len(sys.argv) != 3:
+if len(sys.argv) < 3:
     print(usage_message, file=sys.stderr)
     exit()
 
-kml = ElementTree.parse(sys.argv[1])
-coordinates = kml.findall('.//{http://www.opengis.net/kml/2.2}coordinates')
+coordinates = []
+for input_file in sys.argv[1:-1]:
+    print(input_file)
+    kml = ElementTree.parse(input_file)
+    coordinates += kml.findall('.//{http://www.opengis.net/kml/2.2}coordinates')
 
-with open(sys.argv[2], 'w') as output_file:
+with open(sys.argv[-1], 'w') as output_file:
     for coordinate in coordinates:
         output_string = ""
         split_coordinates = coordinate.text.split(',')
