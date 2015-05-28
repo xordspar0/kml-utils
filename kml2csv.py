@@ -10,7 +10,7 @@
 import sys
 from xml.etree import ElementTree
 
-usage_message = 'Usage: {} KML_File Output'.format(sys.argv[0])
+usage_message = 'Usage: {} KML_FILE OUTPUT'.format(sys.argv[0])
 
 if len(sys.argv) != 3:
     print(usage_message, file=sys.stderr)

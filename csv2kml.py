@@ -16,7 +16,7 @@
 import re
 import sys
 
-usage_message = 'Usage: {} {{CSV File}} Output'.format(sys.argv[0])
+usage_message = 'Usage: {} {{CSV_FILE}} OUTPUT'.format(sys.argv[0])
 
 if len(sys.argv) < 3:
     print(usage_message, file=sys.stderr)
