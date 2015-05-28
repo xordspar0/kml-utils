@@ -16,11 +16,13 @@ if len(sys.argv) < 3:
     print(usage_message, file=sys.stderr)
     exit()
 
+# Parse each KML file and look for <coordinates> tags in each file.
 coordinates = []
 for input_file in sys.argv[1:-1]:
     kml = ElementTree.parse(input_file)
     coordinates += kml.findall('.//{http://www.opengis.net/kml/2.2}coordinates')
 
+# Write the coordinates to a file as delimited text
 with open(sys.argv[-1], 'w') as output_file:
     for coordinate in coordinates:
         output_string = ""

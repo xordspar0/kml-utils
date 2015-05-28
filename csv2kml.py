@@ -22,7 +22,7 @@ if len(sys.argv) < 3:
     print(usage_message, file=sys.stderr)
     exit()
 
-# The text of the resulting KML document.
+# Strings containing the text of the resulting KML document.
 header = ('<?xml version="1.0" encoding="UTF-8"?>\n'
           '<kml xmlns="http://www.opengis.net/kml/2.2">\n'
           '<Folder>\n')
@@ -37,6 +37,8 @@ delimiter = '[\t, +]'
 line_validation = re.compile(decimal + delimiter + decimal)
 splitter = re.compile(delimiter)
 
+# Parse the input files and build the string containing the body of the KML
+# document as we go.
 for input_file in sys.argv[1:-1]:
     with open(input_file) as current_file:
         for line in current_file:
@@ -52,6 +54,7 @@ for input_file in sys.argv[1:-1]:
                                '\t</Placemark>\n'
                                ).format(longitude, latitude)
 
+# Write the resulting KML to a file.
 with open(sys.argv[-1], 'w') as output_file:
     output_file.write(header + body + footer)
 
