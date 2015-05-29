@@ -7,6 +7,7 @@
 #                                                                    #
 ######################################################################
 
+import os.path
 import sys
 from xml.etree import ElementTree
 
@@ -30,8 +31,14 @@ def main():
         first_file_arg = 1
 
     # If there aren't enough file arguments, display the usage message and exit.
-    if len(sys.argv) < 3 - (first_file_arg - 1):
+    if len(sys.argv) < 2 - (first_file_arg - 1):
         print_usage()
+
+    # Check if the output file already exists
+    if os.path.exists(sys.argv[-1]):
+        user_response = input(sys.argv[-1] + ' already exists. Overwrite it? [y/N] ')
+        if user_response == '' or user_response[0] != 'y':
+            exit()
 
     # Parse each KML file and look for <coordinates> tags in each file.
     coordinates = []

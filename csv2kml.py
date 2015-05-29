@@ -8,6 +8,7 @@
 #                                                                    #
 ######################################################################
 
+import os.path
 import re
 import sys
 
@@ -22,6 +23,16 @@ def main():
     else:
         kml_type = 'placemark'
         first_file_arg = 1
+
+    # If there aren't enough file arguments, display the usage message and exit.
+    if len(sys.argv) < 2 - (first_file_arg - 1):
+        print_usage()
+
+    # Check if the output file already exists
+    if os.path.exists(sys.argv[-1]):
+        user_response = input(sys.argv[-1] + ' already exists. Overwrite it? [y/N] ')
+        if user_response == '' or user_response[0] != 'y':
+            exit()
 
     # Strings containing the text of the resulting KML document.
     if kml_type == 'placemark':
