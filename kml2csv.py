@@ -59,8 +59,8 @@ def main():
 def print_usage():
     print((
         'Usage: {} [-d=DELIM_CHAR] {{KML_FILE}} OUTPUT\n'
-        'DELIM_CHAR can be a comma, tab, or space').format(sys.argv[0]),
-        file=sys.stderr)
+        'DELIM_CHAR can be a comma, tab, or space'
+        ).format(sys.argv[0]), file=sys.stderr)
     exit()
 
 if __name__ == '__main__':

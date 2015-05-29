@@ -8,53 +8,83 @@
 #                                                                    #
 ######################################################################
 
-## TODO:
-# Possible future feature: convert the coordinates to things other than
-# Placemarks (e.g. paths).
-##
-
 import re
 import sys
 
-usage_message = 'Usage: {} {{CSV_FILE}} OUTPUT'.format(sys.argv[0])
+def main():
+    if len(sys.argv) < 3:
+        print_usage()
 
-if len(sys.argv) < 3:
-    print(usage_message, file=sys.stderr)
+    # Determine the type of KML element based on the -t option
+    if '-t' in sys.argv[1]:
+        kml_type = sys.argv[1].split('=')[1]
+        first_file_arg = 2
+    else:
+        kml_type = 'placemark'
+        first_file_arg = 1
+
+    # Strings containing the text of the resulting KML document.
+    if kml_type == 'placemark':
+        header  = ('<?xml version="1.0" encoding="UTF-8"?>\n'
+                   '<kml xmlns="http://www.opengis.net/kml/2.2">\n'
+                   '<Folder>\n')
+        body    =  ''
+        section = ('\t<Placemark>\n'
+                   '\t\t<Point>\n'
+                   '\t\t\t<coordinates>{},{}</coordinates>\n'
+                   '\t\t</Point>\n'
+                   '\t</Placemark>\n')
+        footer  = ('</Folder>\n'
+                   '</kml>\n')
+
+    elif kml_type == 'path':
+        header  = ('<?xml version="1.0" encoding="UTF-8"?>\n'
+                   '<kml xmlns="http://www.opengis.net/kml/2.2">\n'
+                   '<Placemark>\n'
+                   '\t<LineString>\n'
+                   '\t\t<extrude>0</extrude>\n'
+                   '\t\t<tessellate>1</tessellate>\n'
+                   '\t\t<altitudeMode>clampToGround</altitudeMode>\n'
+                   '\t\t<coordinates>\n')
+        body    =  ''
+        section = ('\t\t\t{},{}\n')
+        footer  = ('\t\t</coordinates>\n'
+                   '\t</LineString>\n'
+                   '</Placemark>\n'
+                   '</kml>\n')
+    else:
+        print_usage()
+
+    # Regular expressions for parsing the CSV file.
+    # Note that the delimiter can be a tab, a comma, or whitespace.
+    decimal = '-?[0-9]+(.[0-9]+)?'
+    delimiter = '[\t, +]'
+    line_validation = re.compile(decimal + delimiter + decimal)
+    splitter = re.compile(delimiter)
+
+    # Parse the input files and build the string containing the body of the KML
+    # document as we go.
+    for input_file in sys.argv[first_file_arg:-1]:
+        with open(input_file) as current_file:
+            for line in current_file:
+                if (line_validation.match(line)):
+
+                    longitude = splitter.split(line.strip())[0]
+                    latitude = splitter.split(line.strip())[1]
+
+                    body = body + section.format(longitude, latitude)
+
+    # Write the resulting KML to a file.
+    with open(sys.argv[-1], 'w') as output_file:
+        output_file.write(header + body + footer)
+
+def print_usage():
+    print((
+            'Usage: {} [-t=TYPE] {{CSV_FILE}} OUTPUT\n'
+            'TYPE can be "placemark" or "path"'
+            ).format(sys.argv[0]), file=sys.stderr)
     exit()
 
-# Strings containing the text of the resulting KML document.
-header = ('<?xml version="1.0" encoding="UTF-8"?>\n'
-          '<kml xmlns="http://www.opengis.net/kml/2.2">\n'
-          '<Folder>\n')
-body = ''
-footer = ('</Folder>\n'
-          '</kml>\n')
-
-# Regular expressions for parsing the CSV file.
-# Note that the delimiter can be a tab, a comma, or whitespace.
-decimal = '-?[0-9]+(.[0-9]+)?'
-delimiter = '[\t, +]'
-line_validation = re.compile(decimal + delimiter + decimal)
-splitter = re.compile(delimiter)
-
-# Parse the input files and build the string containing the body of the KML
-# document as we go.
-for input_file in sys.argv[1:-1]:
-    with open(input_file) as current_file:
-        for line in current_file:
-            if (line_validation.match(line)):
-
-                longitude = splitter.split(line.strip())[0]
-                latitude = splitter.split(line.strip())[1]
-
-                body = body + ('\t<Placemark>\n'
-                               '\t\t<Point>\n'
-                               '\t\t\t<coordinates>{0},{1}</coordinates>\n'
-                               '\t\t</Point>\n'
-                               '\t</Placemark>\n'
-                               ).format(longitude, latitude)
-
-# Write the resulting KML to a file.
-with open(sys.argv[-1], 'w') as output_file:
-    output_file.write(header + body + footer)
+if __name__ == '__main__':
+    main()
 
