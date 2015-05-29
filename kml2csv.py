@@ -16,7 +16,7 @@ def main():
 
     # Set the delimiter for the delimited text file based on the -d option
     # first_file_arg is the argument where the first file should be found.
-    if '-d' in sys.argv[1]:
+    if sys.argv[1][0:2] == '-d':
         delimiter_arg = sys.argv[1].split('=')
 
         # Make sure that the delimiter is a reasonable character

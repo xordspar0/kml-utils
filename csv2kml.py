@@ -16,7 +16,7 @@ def main():
         print_usage()
 
     # Determine the type of KML element based on the -t option
-    if '-t' in sys.argv[1]:
+    if sys.argv[1][0:2] == '-t':
         kml_type = sys.argv[1].split('=')[1]
         first_file_arg = 2
     else:

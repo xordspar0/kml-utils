@@ -1,4 +1,6 @@
-[ ]	eliminate false positives when checking the option argument in both scripts
+## Bugs and Improvements ##
+
+[X]	eliminate false positives when checking the option argument in both scripts
 [ ]	eliminate blank lines when converting from KML to CSV and vice versa
 [ ] add path support to kml2csv.py
 
