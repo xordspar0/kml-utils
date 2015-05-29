@@ -1,0 +1,4 @@
+# KML Project Ideas
+
+*	Generate KML paths from CSV coordinates (in progress).
+*	Write a script to merge KML files together.
