@@ -63,7 +63,9 @@ def main():
                 altitude = split_coordinates[2]
                 output_string += delimiter + altitude
 
-            output_file.write(output_string + '\n')
+            # Skip empty lines
+            if output_string != '':
+                output_file.write(output_string + '\n')
 
 def print_usage():
     print((
