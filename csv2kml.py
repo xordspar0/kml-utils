@@ -19,7 +19,7 @@ def main():
     # Determine the type of KML element based on the -t option
     # first_file_arg is the argument where the first file should be found.
     # The -t=path and -t path syntaxes are both acceptable
-    if sys.argv[1] == '-t'):
+    if sys.argv[1] == '-t':
         kml_type = sys.argv[2]
         first_file_arg = 3
     elif sys.argv[1].startswith('-t='):
