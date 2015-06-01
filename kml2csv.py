@@ -52,20 +52,21 @@ def main():
     # Write the coordinates to a file as delimited text
     with open(sys.argv[-1], 'w') as output_file:
         for coordinate in coordinates:
-            output_string = ""
-            split_coordinates = coordinate.text.strip().split(',')
-            
-            if len(split_coordinates) >= 2:
-                longitude = split_coordinates[0]
-                latitude = split_coordinates[1]
-                output_string += longitude + delimiter + latitude
-            if len(split_coordinates) >= 3:
-                altitude = split_coordinates[2]
-                output_string += delimiter + altitude
+            for coordinate_line in coordinate.text.strip().split('\n'):
+                split_coordinate = coordinate_line.strip().split(',')
+                output_string = ""
+                
+                if len(split_coordinate) >= 2:
+                    longitude = split_coordinate[0]
+                    latitude = split_coordinate[1]
+                    output_string += longitude + delimiter + latitude
+                if len(split_coordinate) >= 3:
+                    altitude = split_coordinate[2]
+                    output_string += delimiter + altitude
 
-            # Skip empty lines
-            if output_string != '':
-                output_file.write(output_string + '\n')
+                # Skip empty lines
+                if output_string != '':
+                    output_file.write(output_string + '\n')
 
 def print_usage():
     print((

@@ -2,7 +2,7 @@
 
 [X]	eliminate false positives when checking the option argument in both scripts
 [X]	eliminate blank lines when converting from KML to CSV and vice versa
-[ ] add path support to kml2csv.py
+[X] add path support to kml2csv.py
 [X]	fix the scripts accepting too few arguments when using an option
 [X]	switch from "-t=path" to "-t path" syntax (it's more natural and expected)
 
