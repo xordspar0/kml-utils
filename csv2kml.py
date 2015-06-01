@@ -34,7 +34,7 @@ def main():
         print_usage()
 
     # If there aren't enough file arguments, display the usage message and exit.
-    if len(sys.argv) < 2 - (first_file_arg - 1):
+    if len(sys.argv) < 2 + first_file_arg:
         print_usage()
 
     # Check if the output file already exists
