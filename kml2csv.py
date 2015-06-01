@@ -17,18 +17,20 @@ def main():
 
     # Set the delimiter for the delimited text file based on the -d option
     # first_file_arg is the argument where the first file should be found.
-    if sys.argv[1][0:2] == '-d':
-        delimiter_arg = sys.argv[1].split('=')
-
-        # Make sure that the delimiter is a reasonable character
-        if len(delimiter_arg) == 2 and delimiter_arg[1] in [',', '\t', ' ']:
-            delimiter = delimiter_arg[1]
-            first_file_arg = 2
-        else:
-            print_usage()
+    # The -d=, and -d , syntaxes are both acceptable
+    if sys.argv[1] == '-d':
+        delimiter = sys.argv[2]
+        first_file_arg = 3
+    elif sys.argv[1].startswith('-d=') and len(sys.argv[1]) == 4:
+        delimiter = sys.argv[1].split('=')[1]
+        first_file_arg = 2
     else:
         delimiter = '\t'
         first_file_arg = 1
+
+    # Make sure that the delimiter is a reasonable character
+    if not delimiter in [',', '\t', ' ']:
+        print_usage()
 
     # If there aren't enough file arguments, display the usage message and exit.
     if len(sys.argv) < 2 - (first_file_arg - 1):

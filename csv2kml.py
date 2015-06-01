@@ -17,12 +17,21 @@ def main():
         print_usage()
 
     # Determine the type of KML element based on the -t option
-    if sys.argv[1][0:2] == '-t':
+    # first_file_arg is the argument where the first file should be found.
+    # The -t=path and -t path syntaxes are both acceptable
+    if sys.argv[1] == '-t'):
+        kml_type = sys.argv[2]
+        first_file_arg = 3
+    elif sys.argv[1].startswith('-t='):
         kml_type = sys.argv[1].split('=')[1]
         first_file_arg = 2
     else:
         kml_type = 'placemark'
         first_file_arg = 1
+
+    # Make sure the KML type is valid
+    if not kml_type in ['placemark', 'path']:
+        print_usage()
 
     # If there aren't enough file arguments, display the usage message and exit.
     if len(sys.argv) < 2 - (first_file_arg - 1):
@@ -63,8 +72,6 @@ def main():
                    '\t</LineString>\n'
                    '</Placemark>\n'
                    '</kml>\n')
-    else:
-        print_usage()
 
     # Regular expressions for parsing the CSV file.
     # Note that the delimiter can be a tab, a comma, or whitespace.
