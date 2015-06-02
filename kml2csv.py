@@ -44,10 +44,10 @@ def main():
 
     # Parse each KML file and look for <coordinates> tags in each file.
     coordinates = []
+    kmlns = {'kml' : 'http://www.opengis.net/kml/2.2'}
     for input_file in sys.argv[first_file_arg:-1]:
         kml = ElementTree.parse(input_file)
-        coordinates += kml.findall(
-                './/{http://www.opengis.net/kml/2.2}coordinates')
+        coordinates += kml.findall('.//kml:coordinates', namespaces = kmlns)
 
     # Write the coordinates to a file as delimited text
     with open(sys.argv[-1], 'w') as output_file:
