@@ -22,14 +22,16 @@ def main():
             exit()
 
     # Parse each KML file to be merged
-    elements = []
+    kml_document = ElementTree.ElementTree()
+    kml_document._setroot(ElementTree.Element('kml'))
+    root_folder = ElementTree.Element('Folder')
+    kml_document.getroot().append(root_folder)
     for input_file in sys.argv[1:-1]:
-        kml = ElementTree.parse(input_file)
-        elements += list(kml.getroot())
+        for element in list(ElementTree.parse(input_file).getroot()):
+            root_folder.append(element)
     
-    for element in elements:
-        ElementTree.dump(element)
-
+    ElementTree.register_namespace('', 'http://www.opengis.net/kml/2.2')
+    kml_document.write(sys.argv[-1], encoding='utf-8', xml_declaration=True)
 #    # Write the merged KML to a file
 #    with open(sys.argv[-1], 'w') as output_file:
 #        for coordinate in elements:
@@ -51,8 +53,7 @@ def main():
 
 def print_usage():
     print((
-        'Usage: {} [-d=DELIM_CHAR] {{KML_FILE}} OUTPUT\n'
-        'DELIM_CHAR can be a comma, tab, or space'
+        'Usage: {} {{KML_FILES}} OUTPUT'
         ).format(sys.argv[0]), file=sys.stderr)
     exit()
 
