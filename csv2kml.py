@@ -76,7 +76,7 @@ def main():
     # Regular expressions for parsing the CSV file.
     # Note that the delimiter can be a tab, a comma, or whitespace.
     decimal = '-?[0-9]+(.[0-9]+)?'
-    delimiter = '[\t, +]'
+    delimiter = '[\t,]'
     line_validation = re.compile(decimal + delimiter + decimal)
     splitter = re.compile(delimiter)
 

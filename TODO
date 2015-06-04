@@ -5,8 +5,9 @@
 [X] add path support to kml2csv.py
 [X]	fix the scripts accepting too few arguments when using an option
 [X]	switch from "-t=path" to "-t path" syntax (it's more natural and expected)
+[ ] csv2kml should choose a delimiter at the beginning and stick with it
 
 ## KML Project Ideas ##
 
 [X]	Generate KML paths from CSV coordinates.
-[ ]	Write a script to merge KML files together.
+[X]	Write a script to merge KML files together.
