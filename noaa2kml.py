@@ -1,10 +1,10 @@
 ######################################################################
-# csv2kml.py                                                         #
+# noaa2kml.py                                                        #
 # Written by Jordan Christiansen                                     #
-# Created: 21 May 2015                                               #
+# Created: 4 June 2015                                               #
 ######################################################################
-# Read a list of global coordinates from a CSV file and translate it #
-# into a KML file.                                                   #
+# Read a list of geospactial coordinates from a CSV file from NOAA   #
+# and translate it into a KML file.                                  #
 #                                                                    #
 ######################################################################
 
@@ -39,8 +39,8 @@ def main():
     # document as we go.
     with open(sys.argv[1]) as input_file:
         for line in input_file:
-            latitude = line.strip().split(',')[8]
-            longitude = line.strip().split(',')[9]
+            latitude = line.strip().split(',')[7]
+            longitude = line.strip().split(',')[8]
 
             body = body + section.format(longitude, latitude)
 
