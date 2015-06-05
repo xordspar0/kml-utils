@@ -3,8 +3,8 @@
 # Written by Jordan Christiansen                                     #
 # Created: 21 May 2015                                               #
 ######################################################################
-# Read a list of global coordinates from a CSV file and translate it #
-# into a KML file.                                                   #
+# Read a list of geospatial coordinates from a CSV file and          #
+# translate it into a KML file.                                      #
 #                                                                    #
 ######################################################################
 
