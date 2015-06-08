@@ -13,12 +13,12 @@ import re
 import sys
 
 def main():
-    if len(sys.argv) != 3:
+    if len(sys.argv) != 4:
         print_usage()
 
     # Check if the output file already exists
-    if os.path.exists(sys.argv[-1]):
-        user_response = input(sys.argv[-1] + ' already exists. Overwrite it? [y/N] ')
+    if os.path.exists(sys.argv[3]):
+        user_response = input(sys.argv[3] + ' already exists. Overwrite it? [y/N] ')
         if user_response == '' or user_response[0] != 'y':
             exit()
 
@@ -28,6 +28,7 @@ def main():
                '<Folder>\n')
     body    =  ''
     section = ('\t<Placemark>\n'
+               '\t\t<name>{}</name>\n'
                '\t\t<Point>\n'
                '\t\t\t<coordinates>{},{}</coordinates>\n'
                '\t\t</Point>\n'
@@ -37,20 +38,29 @@ def main():
 
     # Parse the input files and build the string containing the body of the KML
     # document as we go.
-    with open(sys.argv[1]) as input_file:
-        for line in input_file:
-            latitude = line.strip().split(',')[7]
-            longitude = line.strip().split(',')[8]
+    with open(sys.argv[1]) as locations:
+        for line in locations:
+            line_fields = line.split(',')
 
-            body = body + section.format(longitude, latitude)
+            name = find_event_type(line_fields[2])
+            latitude = line_fields[7]
+            longitude = line_fields[8]
+
+            body = body + section.format(name, longitude, latitude)
 
     # Write the resulting KML to a file.
-    with open(sys.argv[-1], 'w') as output_file:
+    with open(sys.argv[3], 'w') as output_file:
         output_file.write(header + body + footer)
+
+def find_event_type(event_id):
+    with open(sys.argv[2]) as details:
+        for line in details:
+            if event_id in line:
+                return line.split(',')[12].strip('"')
 
 def print_usage():
     print((
-            'Usage: {} NOAA_CSV_FILE OUTPUT'
+            'Usage: {} LOCATIONS_FILE DETAILS_FILE OUTPUT'
             ).format(sys.argv[0]), file=sys.stderr)
     exit()
 
