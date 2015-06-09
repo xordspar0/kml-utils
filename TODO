@@ -7,7 +7,7 @@
 [X]	switch from "-t=path" to "-t path" syntax (it's more natural and expected)
 [ ] csv2kml should choose a delimiter at the beginning and stick with it
 [ ] noaa2kml became very slow when I added the event type lookup to it
-[ ] noaa2kml should skip the header line of the csv files
+[X] noaa2kml should skip the header line of the csv files
 
 ## KML Project Ideas ##
 

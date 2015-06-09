@@ -9,7 +9,6 @@
 ######################################################################
 
 import os.path
-import re
 import sys
 
 def main():
@@ -41,6 +40,11 @@ def main():
     with open(sys.argv[1]) as locations:
         for line in locations:
             line_fields = line.split(',')
+
+            # Skip the line if it's event_id isn't a number (this is for
+            # skipping the header line)
+            if not line_fields[2].isdigit():
+                continue
 
             name = find_event_type(line_fields[2])
             latitude = line_fields[7]
