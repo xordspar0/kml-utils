@@ -9,7 +9,6 @@
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
-import java.util.Scanner;
 
 public class Noaa2kml
 {
@@ -36,9 +35,9 @@ public class Noaa2kml
 		}
 		if (Files.exists(outputPath))
 		{
-			Scanner userInput = new Scanner(System.in);
+			Console userInput = System.console();
 			System.out.format("%s already exists. Overwrite it? [y/N] ", args[2]);
-			String userResponse = userInput.nextLine();
+			String userResponse = userInput.readLine();
 			if (userResponse == null || !userResponse.startsWith("y"))
 			{
 				System.exit(0);
