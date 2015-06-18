@@ -1,0 +1,19 @@
+This is a set of command line utilities for dealing with KML files.
+
+* main.kml is a demo of retrieving information from a server from inside KML.
+  radius.py is the script that runs on the server.
+* csv2kml.py and kml2csv.py are scripts that convert to and from simple CSV
+  files. A file that csv2kml.py is capable of reading, data/locations.csv, is
+  included.
+* kmlmerge.py combines two kml files into one.
+* noaa2kml.py takes a CSV file from NOAA that contains locations of storm
+  events in the United States and converts it to KML. It reads from
+  data/StormEvents_locations-ftp_v1.0_d2010_c20140824.csv. It also retreives
+  data from data/StormEvents_details-ftp_v1.0_d2010_c20140824.csv. Since these
+  files are both unsorted, looking up information in the details file currently
+  takes a very long time. To make testing this script easier, I made a
+  truncated version of the locations file, data/storm_loc_trunc.csv. This file
+  only has 1000 records.
+
+Each of the command line scripts includes a usage message that demonstrates
+what arguments it needs.
