@@ -2,17 +2,20 @@
  *  @author Jordan Christiansen
  *  @since 2015-06-10
  *
- *  Read a list of geospactial coordinates from a CSV file from NOAA and
+ *  Read a list of geolocation coordinates from a CSV file from NOAA and
  *  translate it into a KML file.
  */
+package noaa2kml;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
+import java.util.ArrayList;
 
-public class Noaa2kml
+public class Main
 {
 	private static String progName = "Noaa2kml";
+	private static final int maxThreads = 4;
 
 	public static void main(String[] args)
 	{
@@ -58,34 +61,46 @@ public class Noaa2kml
 		String footer  = "</Folder>\n" +
 						 "</kml>\n";
 
-		// Parse the input files and build the string containing the body of
-		// the KML document as we go.
-		try (BufferedReader locations =
-				Files.newBufferedReader(locationsPath))
+		/*
+		 * This is where I will start spawning the reader threads. The strategy
+		 * will be to have each thread process a set number of entries (say
+		 * 100) and when the thread finishes, main will start a new one to keep
+		 * the number of threads below a minimum.
+		 */
+		try (BufferedReader inputFile = Files.newBufferedReader(locationsPath))
 		{
-			String line;
-			while ((line = locations.readLine()) != null)
-			{
-				String[] lineFields = line.split(",");
+			ArrayList<Thread> threads = new ArrayList<Thread>(maxThreads);
+			String line = "";
+			String dataChunk = "";
 
-				// Skip the line if its eventID isn't a number (this skips the
-				// header line)
-				try {
-					Integer.parseInt(lineFields[2]);
-				} catch (NumberFormatException e) {
-					continue;
+			while (line != null)
+			{
+				for (int i = 0; i < 100; i++)
+				{
+					line = inputFile.readLine();
+					dataChunk += line;
 				}
 
-				String name = findEventType(detailsPath, lineFields[2]);
-				String latitude = lineFields[7];
-				String longitude = lineFields[8];
+				if (threads.size() >= maxThreads)
+				{
+					Thread.currentThread().wait();
+				}
 
-				body += String.format(section, name, longitude, latitude);
+				for (Thread thread : threads)
+				{
+					if (!thread.isAlive())
+					{
+						//body += String.format(section, thread.getEventType()); What am I doing?? Pull it together, man.
+						threads.remove(thread);
+					}
+				}
+
+				dataChunk = "";
 			}
 		}
-		catch (IOException e)
+		catch (IOException exception)
 		{
-			System.err.format("IOException: %s%n", e);
+			System.err.format("IOException: %s%n", exception);
 		}
 
 		// Write the resulting KML to a file.
@@ -98,31 +113,6 @@ public class Noaa2kml
 		{
 			System.err.format("IOException: %s%n", e);
 		}
-	}
-
-	/**
-	 * Look up the event type in the details file.
-	 */
-	private static String findEventType(Path filePath, String eventID)
-	{
-		try (BufferedReader details = Files.newBufferedReader(filePath))
-		{
-			String line;
-			while ((line = details.readLine()) != null)
-			{
-				if (line.contains(eventID))
-				{
-					String eventType = line.split(",")[12];
-					return eventType.substring(1, eventType.length()-1);
-				}
-			}
-		}
-		catch (IOException exception)
-		{
-			System.err.format("IOException: %s%n", exception);
-		}
-
-		return null;
 	}
 
 	/**
