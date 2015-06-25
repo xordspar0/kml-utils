@@ -5,11 +5,7 @@
 [X] add path support to kml2csv.py
 [X]	fix the scripts accepting too few arguments when using an option
 [X]	switch from "-t=path" to "-t path" syntax (it's more natural and expected)
-[ ] csv2kml should choose a delimiter at the beginning and stick with it
 [X] noaa2kml should skip the header line of the csv files
-[ ] improve the performance of noaa2kml
-	[ ] multithread the Java noaa2kml program (medium difficulty)
-	[ ] sort the noaa details file before looking things up in it (hard difficulty)
 
 ## KML Project Ideas ##
 
