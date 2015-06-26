@@ -45,32 +45,36 @@ def main():
 
     # Strings containing the text of the resulting KML document.
     if kml_type == 'placemark':
-        header  = ('<?xml version="1.0" encoding="UTF-8"?>\n'
-                   '<kml xmlns="http://www.opengis.net/kml/2.2">\n'
-                   '<Folder>\n')
-        body    =  ''
-        section = ('\t<Placemark>\n'
-                   '\t\t<Point>\n'
-                   '\t\t\t<coordinates>{},{}</coordinates>\n'
-                   '\t\t</Point>\n'
-                   '\t</Placemark>\n')
-        footer  = ('</Folder>\n'
-                   '</kml>\n')
+        header = ('<?xml version="1.0" encoding="UTF-8"?>\n'
+                  '<kml xmlns="http://www.opengis.net/kml/2.2">\n'
+                  '<Document>\n')
+        body = ''
+        section_header = '\t<Folder>\n'
+        section = ('\t\t<Placemark>\n'
+                   '\t\t\t<Point>\n'
+                   '\t\t\t\t<coordinates>{},{}</coordinates>\n'
+                   '\t\t\t</Point>\n'
+                   '\t\t</Placemark>\n')
+        section_footer = '\t</Folder>\n'
+        footer = ('</Document>\n'
+                  '</kml>\n')
 
     elif kml_type == 'path':
         header  = ('<?xml version="1.0" encoding="UTF-8"?>\n'
                    '<kml xmlns="http://www.opengis.net/kml/2.2">\n'
-                   '<Placemark>\n'
-                   '\t<LineString>\n'
-                   '\t\t<extrude>0</extrude>\n'
-                   '\t\t<tessellate>1</tessellate>\n'
-                   '\t\t<altitudeMode>clampToGround</altitudeMode>\n'
-                   '\t\t<coordinates>\n')
-        body    =  ''
-        section = ('\t\t\t{},{}\n')
-        footer  = ('\t\t</coordinates>\n'
-                   '\t</LineString>\n'
-                   '</Placemark>\n'
+                   '<Document>\n')
+        body =  ''
+        section_header = ('<Placemark>\n'
+                          '\t\t<LineString>\n'
+                          '\t\t\t<extrude>0</extrude>\n'
+                          '\t\t\t<tessellate>1</tessellate>\n'
+                          '\t\t\t<altitudeMode>clampToGround</altitudeMode>\n'
+                          '\t\t\t<coordinates>\n')
+        section = ('\t\t\t\t{},{}\n')
+        section_footer  = ('\t\t\t</coordinates>\n'
+                           '\t\t</LineString>\n'
+                           '\t</Placemark>\n')
+        footer = ('</Document>\n'
                    '</kml>\n')
 
     # Regular expressions for parsing the CSV file.
@@ -84,9 +88,19 @@ def main():
     # document as we go.
     for input_file in sys.argv[first_file_arg:-1]:
         with open(input_file) as current_file:
-            for line in current_file:
-                if (line_validation.match(line)):
+            for line_number, line in enumerate(current_file):
+                # If this is a new file, start a new section
+                if line_number == 1:
+                    body += section_footer
 
+                    # If the first line is not data, use it as the name of the
+                    # folder.
+                    if not line_validation.match(line):
+                        body += section_header + '<name>{}</name>\n'.format(line)
+                    else:
+                        body += section_header
+
+                elif line_validation.match(line):
                     longitude = splitter.split(line.strip())[0]
                     latitude = splitter.split(line.strip())[1]
 

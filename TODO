@@ -6,6 +6,8 @@
 [X]	fix the scripts accepting too few arguments when using an option
 [X]	switch from "-t=path" to "-t path" syntax (it's more natural and expected)
 [X] noaa2kml should skip the header line of the csv files
+[ ] test the additions to csv2kml and make a KML document that contains each
+	storm type in a separate folder
 
 ## KML Project Ideas ##
 
