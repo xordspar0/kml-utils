@@ -27,11 +27,10 @@ def main():
         if user_response == '' or user_response[0] != 'y':
             exit()
 
-    header = ('EVENT_ID\tLATITUDE\tLONGITUDE\t' + (46 * '{}\t') + '{}\n'
-            ).format(*event_types)
+    #header = ('EVENT_ID\tLATITUDE\tLONGITUDE\t' + (46 * '{}\t') + '{}\n'
+    #        ).format(*event_types)
     body = ''
     section = 49 * '{}\t' + '{}\n'
-    footer = ''
 
     # Parse the input files and build the string containing the body of the new
     # document as we go.
