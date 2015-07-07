@@ -27,10 +27,8 @@ def main():
         if user_response == '' or user_response[0] != 'y':
             exit()
 
-    #header = ('EVENT_ID\tLATITUDE\tLONGITUDE\t' + (46 * '{}\t') + '{}\n'
-    #        ).format(*event_types)
     body = ''
-    section = 49 * '{}\t' + '{}\n'
+    section = 3 * '{}\t' + '{}\n'
 
     # Parse the input files and build the string containing the body of the new
     # document as we go.
@@ -47,19 +45,18 @@ def main():
             latitude = line_fields[7]
             longitude = line_fields[8]
             this_event_type = find_event_type(line_fields[2])
-            event_matrix = []
+            event_type_number = -1
             
-            for possible_event_type in event_types:
+            for i, possible_event_type in enumerate(event_types):
                 if this_event_type.upper() == possible_event_type:
-                    event_matrix.append(1)
-                else:
-                    event_matrix.append(0)
+                    event_type_number = i
 
-            body += section.format(eventID, latitude, longitude, *event_matrix)
+            body += section.format(eventID, latitude, longitude,
+                    event_type_number)
 
     # Write the result to a file.
     with open(sys.argv[3], 'w') as output_file:
-        output_file.write(header + body + footer)
+        output_file.write(body)
 
 def find_event_type(event_id):
     with open(sys.argv[2]) as details:
