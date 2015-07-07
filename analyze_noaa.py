@@ -7,33 +7,17 @@
 #                                                                    #
 ######################################################################
 
-import statistics
-import sys
+import numpy as np
+import matplotlib.pyplot as plt
+import mlpy
 
-def main():
-    if len(sys.argv) != 2:
-        print_usage()
+data = np.loadtxt('data/StormEvents_combined_d2010.csv', delimiter='\t')
 
-    data = []
-
-    with open(sys.argv[1]) as data_file:
-        for line in data_file:
-            line_fields = line.split()
-
-            data.append(tuple(line_fields[1:-1]))
-
-    sort(data)
-
-def sort(data):
-    for index, event_type in enumerate(event_types):
-        with open(event_type, 'x') as csv_file:
-            
-
-def print_usage():
-    print((
-            'Usage: {} DATA_FILE'
-            ).format(sys.argv[0]), file=sys.stderr)
-    exit()
+x = data[:, 2:3]
+y = data[:, 1:2]
+colors = data[:, 3:4]
+plt.scatter(x, y, c=colors)
+plt.show()
 
 event_types = ['ASTRONOMICAL LOW TIDE', 'AVALANCHE', 'BLIZZARD',
         'COASTAL FLOOD', 'COLD/WIND CHILL', 'DEBRIS FLOW', 'DENSE FOG',
@@ -47,7 +31,4 @@ event_types = ['ASTRONOMICAL LOW TIDE', 'AVALANCHE', 'BLIZZARD',
         'MARINE STRONG WIND', 'MARINE THUNDERSTORM WIND', 'RIP CURRENT',
         'SEICHE', 'SLEET', 'STORM SURGE/TIDE', 'STRONG WIND', 'VOLCANIC ASH',
         'WATERSPOUT', 'WILDFIRE', 'WINTER STORM', 'WINTER WEATHER']
-
-if __name__ == '__main__':
-    main()
 
