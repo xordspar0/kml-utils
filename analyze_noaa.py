@@ -13,10 +13,10 @@ import mlpy
 
 data = np.loadtxt('data/StormEvents_combined_d2010.csv', delimiter='\t')
 
-x = data[:, 2:3]
-y = data[:, 1:2]
-colors = data[:, 3:4]
-plt.scatter(x, y, c=colors)
+x = data[:, 2:3].flatten()
+y = data[:, 1:2].flatten()
+categories = np.array([int(cat) for cat in data[:, 3:4].flat])
+plt.scatter(x, y, c=categories)
 plt.show()
 
 event_types = ['ASTRONOMICAL LOW TIDE', 'AVALANCHE', 'BLIZZARD',
