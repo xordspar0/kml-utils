@@ -8,11 +8,6 @@
 #                                                                    #
 ######################################################################
 
-# TODO:
-# Switch to using the Python CSV standard library.
-# Optionally export to a database.
-# Make some of the fields associated with an event optional.
-
 import os.path
 import sys
 
