@@ -23,9 +23,9 @@ plt.show()
 # Take a random sample and perform an LDA analysis.
 np.random.seed(0)
 sample_size = 500
-sample_choice = np.random.random_integers(0, len(data), size=sample_size)
-sample_pos = np.zeros(position.shape)
-sample_cat = np.zeros(categories.shape, np.int)
+sample_choice = np.random.choice(range(len(data)), size=sample_size)
+sample_pos = np.zeros((sample_size, 2))
+sample_cat = np.zeros(sample_size, np.int)
 
 for i, choice in enumerate(sample_choice):
     sample_pos[i][0] = position[choice][0]
