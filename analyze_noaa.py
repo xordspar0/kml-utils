@@ -7,6 +7,9 @@
 #                                                                    #
 ######################################################################
 
+#TODO: add a legend to the correct/incorrect classification plot
+#   also, change the colors in the correct/incorrect plot
+
 import numpy as np
 import matplotlib.pyplot as plt
 import mlpy
@@ -35,7 +38,8 @@ for i, choice in enumerate(sample_choice):
 
 # Plot the sample data
 ax2 = plt.subplot2grid((2,3), (0,2),
-        title='Random Sample (n={})'.format(sample_size), aspect='equal')
+        title='Random Sample (n={})'.format(sample_size),
+        aspect='equal', ylim=[-20,80])
 ax2.scatter(sample_pos[:, 0:1], sample_pos[:, 1:2], c=sample_cat)
 
 # Use mlpy's LDAC to learn and classify the data
@@ -59,7 +63,8 @@ for i in range(sample_size):
         correctness_matrix.append('r')
 
 ax3 = plt.subplot2grid((2,3), (1,2),
-        title='Correct/Incorrect Classifications', aspect='equal')
+        title='Correct/Incorrect Classifications',
+        aspect='equal', ylim=[-20,80])
 ax3.scatter(sample_pos[:, 0:1], sample_pos[:, 1:2], c=correctness_matrix)
 
 # Show results
