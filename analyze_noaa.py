@@ -7,11 +7,9 @@
 #                                                                    #
 ######################################################################
 
-#TODO: add a legend to the correct/incorrect classification plot
-#   also, change the colors in the correct/incorrect plot
-
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
 import mlpy
 
 # Load the data.
@@ -25,7 +23,7 @@ ax1 = plt.subplot2grid((2,3), (0,0), rowspan=2, colspan=2,
 ax1.scatter(position[:, 0:1], position[:, 1:2], c=categories)
 
 # Take a random sample and perform an LDA analysis.
-#np.random.seed(0)
+np.random.seed(0)
 sample_size = 500
 sample_choice = np.random.choice(range(len(data)), size=sample_size)
 sample_pos = np.zeros((sample_size, 2))
@@ -57,15 +55,18 @@ correctness_matrix = []
 for i in range(sample_size):
     if classifications[i] == sample_cat[i]:
         correct += 1
-        correctness_matrix.append('g')
+        correctness_matrix.append('b')
     else:
         incorrect += 1
-        correctness_matrix.append('r')
+        correctness_matrix.append('y')
 
 ax3 = plt.subplot2grid((2,3), (1,2),
         title='Correct/Incorrect Classifications',
         aspect='equal', ylim=[-20,80])
 ax3.scatter(sample_pos[:, 0:1], sample_pos[:, 1:2], c=correctness_matrix)
+correct_key = mpatches.Patch(color='b', label='correct')
+incorrect_key = mpatches.Patch(color='y', label='incorrect')
+ax3.legend(handles = [correct_key, incorrect_key])
 
 # Show results
 print("Sample size: {}".format(sample_size))
