@@ -29,11 +29,6 @@ event_types = ['ASTRONOMICAL LOW TIDE', 'AVALANCHE', 'BLIZZARD',
         'TROPICAL DEPRESSION', 'TROPICAL STORM', 'TSUNAMI', 'VOLCANIC ASH',
         'WATERSPOUT', 'WILDFIRE', 'WINTER STORM', 'WINTER WEATHER']
 
-# Plot all of the data.
-ax1 = plt.subplot2grid((2,3), (0,0), rowspan=2, colspan=2,
-        title='All Storms', aspect='equal')
-ax1.scatter(position[:, 0:1], position[:, 1:2], c=categories)
-
 # Take a random sample and perform an LDA analysis.
 np.random.seed(0)
 sample_size = 500
@@ -49,10 +44,10 @@ for i, choice in enumerate(sample_choice):
     sample_cat_counts[categories[choice]] += 1
 
 # Plot the sample data.
-ax2 = plt.subplot2grid((2,3), (0,2),
+ax1 = plt.subplot(121,
         title='Random Sample (n={})'.format(sample_size),
         aspect='equal', ylim=[-20,80])
-ax2.scatter(sample_pos[:, 0:1], sample_pos[:, 1:2], c=sample_cat)
+ax1.scatter(sample_pos[:, 0:1], sample_pos[:, 1:2], c=sample_cat)
 
 # Use mlpy's LDAC to learn and classify the data.
 ldac = mlpy.LDAC()
@@ -75,13 +70,13 @@ for i in range(sample_size):
         correctness_matrix.append('y')
 
 # Plot the correctness data.
-ax3 = plt.subplot2grid((2,3), (1,2),
+ax2 = plt.subplot(122,
         title='Correct/Incorrect Classifications',
         aspect='equal', ylim=[-20,80])
-ax3.scatter(sample_pos[:, 0:1], sample_pos[:, 1:2], c=correctness_matrix)
+ax2.scatter(sample_pos[:, 0:1], sample_pos[:, 1:2], c=correctness_matrix)
 correct_key = mpatches.Patch(color='b', label='correct')
 incorrect_key = mpatches.Patch(color='y', label='incorrect')
-ax3.legend(handles = [correct_key, incorrect_key])
+ax2.legend(handles = [correct_key, incorrect_key])
 
 # Show result and graphs
 print("Sample size: {}".format(sample_size))
