@@ -7,6 +7,9 @@
 #                                                                    #
 ######################################################################
 
+# TODO: report information about false positives, true positives, false
+# negatives, and true negatives. My logic for classifying those is messed up.
+
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
@@ -44,9 +47,8 @@ for i, choice in enumerate(sample_choice):
     sample_cat_counts[categories[choice]] += 1
 
 # Plot the sample data.
-ax1 = plt.subplot(121,
-        title='Random Sample (n={})'.format(sample_size),
-        aspect='equal', ylim=[-20,80])
+ax1 = plt.subplot2grid((2,2), (0,0),
+        title='Random Sample (n={})'.format(sample_size))
 ax1.scatter(sample_pos[:, 0:1], sample_pos[:, 1:2], c=sample_cat)
 
 # Use mlpy's LDAC to learn and classify the data.
@@ -59,24 +61,56 @@ for i, storm in enumerate(sample_pos):
 
 # Check the classification against the actual storm types.
 correct_total = 0
-correct_by_type = np.zeros(len(event_types), np.int)
-correctness_matrix = []
-for i in range(sample_size):
-    if classifications[i] == sample_cat[i]:
+# The positions of the correctly and incorrectly classified storms:
+correct_pos = []
+incorrect_pos = []
+# The evaluations array contains the total number of True Positives (0),
+# True Negatives (1), False Positives (2), and False Negatives (3) for each
+# event type:
+evaluations = np.zeros((len(event_types), 4), np.int)
+for i, classification in enumerate(classifications):
+    # True
+    if classification == sample_cat[i]:
         correct_total += 1
-        correct_by_type[sample_cat[i]] += 1
-        correctness_matrix.append('b')
+        correct_pos.append(sample_pos[i])
+        for event_type_index in range(len(event_types)):
+            if classification == event_type_index:
+                # Positive
+                evaluations[event_type_index][0] += 1
+            else:
+                # Negative
+                evaluations[event_type_index][1] += 1
+    # False
     else:
-        correctness_matrix.append('y')
+        incorrect_pos.append(sample_pos[i])
+        for event_type_index in range(len(event_types)):
+            if classification == event_type_index:
+                # Positive
+                evaluations[event_type_index][2] += 1
+            else:
+                # Negative
+                evaluations[event_type_index][3] += 1
+        
+
+correct_pos = np.array(correct_pos)
+incorrect_pos = np.array(incorrect_pos)
+evaluations = np.array(evaluations)
 
 # Plot the correctness data.
-ax2 = plt.subplot(122,
-        title='Correct/Incorrect Classifications',
-        aspect='equal', ylim=[-20,80])
-ax2.scatter(sample_pos[:, 0:1], sample_pos[:, 1:2], c=correctness_matrix)
-correct_key = mpatches.Patch(color='b', label='correct')
-incorrect_key = mpatches.Patch(color='y', label='incorrect')
-ax2.legend(handles = [correct_key, incorrect_key])
+ax2 = plt.subplot2grid((2,2), (0,1),
+        title='Correct/Incorrect Classifications')
+ax2.scatter(incorrect_pos[:, 0:1], incorrect_pos[:, 1:2], c='b')
+ax2.scatter(correct_pos[:, 0:1], correct_pos[:, 1:2], c='y')
+ax2.legend(['incorrect', 'correct'])
+
+# Plot the True/False Positives/Negatives
+normalized_true_positives = [x/n*100 for n, x in enumerate(evaluations[:, 0:1].flatten())]
+ax3 = plt.subplot2grid((2,2), (1,0), colspan=2,
+        title='True Positives, False Positives, and False Negatives')
+ax3.bar(range(47), normalized_true_positives)
+ax3.bar(range(47), evaluations[:, 1:2].flatten(), bottom=evaluations[:, 0:1].flatten())
+ax3.bar(range(47), evaluations[:, 2:3].flatten(), bottom=evaluations[:, 1:2].flatten())
+ax3.bar(range(47), evaluations[:, 3:4].flatten(), bottom=evaluations[:, 2:3].flatten())
 
 # Show result and graphs
 print("Sample size: {}".format(sample_size))
@@ -85,8 +119,6 @@ print("Number of total correct classifications: {} ({}%)".format(
 for i, event_type in enumerate(event_types):
     if sample_cat_counts[i] > 0:
         print("Number of correct classifications for {}: {} ({}%)".format(
-                event_type, correct_by_type[i],
-                (100*correct_by_type[i]/sample_cat_counts[i]) ))
-#    else:
-#        print("There were no storms of type {} in the sample.".format(event_type))
+                event_type, evaluations[i][0],
+                (100*evaluations[i][0]/sample_cat_counts[i]) ))
 plt.show()
