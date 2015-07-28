@@ -69,28 +69,29 @@ incorrect_pos = []
 # event type:
 evaluations = np.zeros((len(event_types), 4), np.int)
 for i, classification in enumerate(classifications):
-    # True
     if classification == sample_cat[i]:
         correct_total += 1
         correct_pos.append(sample_pos[i])
-        for event_type_index in range(len(event_types)):
-            if classification == event_type_index:
-                # Positive
-                evaluations[event_type_index][0] += 1
-            else:
-                # Negative
-                evaluations[event_type_index][1] += 1
-    # False
     else:
         incorrect_pos.append(sample_pos[i])
-        for event_type_index in range(len(event_types)):
-            if classification == event_type_index:
-                # Positive
-                evaluations[event_type_index][2] += 1
+
+    # Positive
+    for event_type_index, event_type in enumerate(event_types):
+        if classification == event_type_index:
+            # True
+            if sample_cat[i] == event_type_index:
+                evaluations[event_type_index][0] += 1
+            # False
             else:
-                # Negative
+                evaluations[event_type_index][2] += 1
+        # Negative
+        else:
+            # True
+            if sample_cat[i] != event_type_index:
+                evaluations[event_type_index][1] += 1
+            # False
+            else:
                 evaluations[event_type_index][3] += 1
-        
 
 correct_pos = np.array(correct_pos)
 incorrect_pos = np.array(incorrect_pos)
@@ -106,7 +107,7 @@ ax2.legend(['incorrect', 'correct'])
 # Plot the True/False Positives/Negatives
 normalized_true_positives = [x/n*100 for n, x in enumerate(evaluations[:, 0:1].flatten())]
 ax3 = plt.subplot2grid((2,2), (1,0), colspan=2,
-        title='True Positives, False Positives, and False Negatives')
+        title='Classifications For Each Storm Type')
 ax3.bar(range(47), normalized_true_positives)
 ax3.bar(range(47), evaluations[:, 1:2].flatten(), bottom=evaluations[:, 0:1].flatten())
 ax3.bar(range(47), evaluations[:, 2:3].flatten(), bottom=evaluations[:, 1:2].flatten())
