@@ -7,8 +7,8 @@
 #                                                                    #
 ######################################################################
 
-# TODO: report information about false positives, true positives, false
-# negatives, and true negatives. My logic for classifying those is messed up.
+# TODO: Finish the evaluations graph. The current problem is that the 'bottom'
+# field needs to be the sum of all the previous bar plots.
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -18,7 +18,7 @@ import mlpy
 # Load the data.
 data = np.loadtxt('data/StormEvents_combined_d2010.csv', delimiter='\t')
 position = np.hstack((data[:, 2:3], data[:, 1:2]))
-categories = np.array(data[:, 3:4].flatten(), dtype=np.int)
+categories = np.array(data[:, 3], dtype=np.int)
 event_types = ['ASTRONOMICAL LOW TIDE', 'AVALANCHE', 'BLIZZARD',
         'COASTAL FLOOD', 'COLD/WIND CHILL', 'DEBRIS FLOW', 'DENSE FOG',
         'DENSE SMOKE', 'DROUGHT', 'DUST DEVIL', 'DUST STORM', 'EXCESSIVE HEAT',
@@ -105,21 +105,24 @@ ax2.scatter(correct_pos[:, 0:1], correct_pos[:, 1:2], c='y')
 ax2.legend(['incorrect', 'correct'])
 
 # Plot the True/False Positives/Negatives
-normalized_true_positives = [x/n*100 for n, x in enumerate(evaluations[:, 0:1].flatten())]
 ax3 = plt.subplot2grid((2,2), (1,0), colspan=2,
-        title='Classifications For Each Storm Type')
-ax3.bar(range(47), normalized_true_positives)
-ax3.bar(range(47), evaluations[:, 1:2].flatten(), bottom=evaluations[:, 0:1].flatten())
-ax3.bar(range(47), evaluations[:, 2:3].flatten(), bottom=evaluations[:, 1:2].flatten())
-ax3.bar(range(47), evaluations[:, 3:4].flatten(), bottom=evaluations[:, 2:3].flatten())
+        title='Classifications For Each Storm Type', xlim=[0,47])
+ax3.bar(range(47), evaluations[:, 0], color='blue')
+ax3.bar(range(47), evaluations[:, 2], bottom=evaluations[:, 0], color='red')
+ax3.bar(range(47), evaluations[:, 3], bottom=evaluations[:, 0] + evaluations[:, 2], color='yellow')
+ax3.bar(range(47), evaluations[:, 1], bottom=evaluations[:, 0] + evaluations[:, 2] + evaluations[:, 3], color='black')
+ax3.legend(['True Positives', 'False Positives', 'False Negatives', 'True Negatives'], loc=2)
 
 # Show result and graphs
-print("Sample size: {}".format(sample_size))
-print("Number of total correct classifications: {} ({}%)".format(
-        correct_total, (100*correct_total/sample_size) ))
+print('Sample size: {}'.format(sample_size))
+print('Number of total correct classifications: {} ({:.2%})'.format(
+        correct_total, (correct_total/sample_size) ))
+print()
 for i, event_type in enumerate(event_types):
     if sample_cat_counts[i] > 0:
-        print("Number of correct classifications for {}: {} ({}%)".format(
+        print('Number of correct classifications for {}: {} ({:.2%})'.format(
                 event_type, evaluations[i][0],
-                (100*evaluations[i][0]/sample_cat_counts[i]) ))
+                (evaluations[i][0]/sample_cat_counts[i]) ))
+print()
+print('Storm types not listed were not present in the sample.')
 plt.show()
