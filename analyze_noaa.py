@@ -8,8 +8,8 @@
 ######################################################################
 
 import numpy as np
+from scipy import stats
 import matplotlib.pyplot as plt
-import matplotlib.patches as mpatches
 import mlpy
 
 SAMPLE_SIZE = 500
@@ -98,31 +98,43 @@ def main():
     ax2.scatter(correct_loc[:, 0:1], correct_loc[:, 1:2], c='y')
     ax2.legend(['incorrect', 'correct'])
 
-    # Plot the True/False Positives/Negatives
+    # Plot the True/False Positives/Negatives.
     ax3 = plt.subplot2grid((2,2), (1,0), colspan=2,
             title='Classifications For Each Storm Type', xlim=[0,47])
-    ax3.bar(range(47), evaluations[:, 0], color='blue')
-    ax3.bar(range(47), evaluations[:, 2], bottom=evaluations[:, 0], color='red')
-    ax3.bar(range(47), evaluations[:, 3], bottom=evaluations[:, 0] + evaluations[:, 2], color='yellow')
-    ax3.bar(range(47), evaluations[:, 1], bottom=evaluations[:, 0] + evaluations[:, 2] + evaluations[:, 3], color='black')
-    ax3.legend(['True Positives', 'False Positives', 'False Negatives', 'True Negatives'], loc=2)
+    bar1 = ax3.bar(range(47), evaluations[:, 0], label='True Positives',
+            color='cyan')
+    bar2 = ax3.bar(range(47), evaluations[:, 3], label='False Negatives',
+            color='purple', bottom=evaluations[:, 0])
+    bar3 = ax3.bar(range(47), evaluations[:, 2], label='False Positives',
+            color='gray', bottom=evaluations[:, 0] + evaluations[:, 3])
+    bar4 = ax3.bar(range(47), evaluations[:, 1], label='True Negatives',
+            color='black', bottom=(evaluations[:, 0] + evaluations[:, 3]
+                + evaluations[:, 2]))
+    handles, labels = ax3.get_legend_handles_labels()
+    ax3.legend(handles[::-1], labels[::-1], loc=2)
 
-    # Show result and graphs
+    # Show result and graphs.
     print('Sample size: {}'.format(SAMPLE_SIZE))
     print('Number of total correct classifications: {} ({:.2%})'.format(
             correct_total, (correct_total/SAMPLE_SIZE) ))
     print()
+    # Show stats for each storm type and do a chi-squared test.
     for i, event_type in enumerate(event_types):
         if sample_cat_counts[i] > 0:
-            print('Number of correct classifications for {}: {} ({:.2%})'.format(
-                    event_type, evaluations[i][0],
-                    (evaluations[i][0]/sample_cat_counts[i]) ))
+            print('{} (#{}):'.format(event_type, i))
+            print('\tTotal number: {}'.format(sample_cat_counts[i]))
+            print('\tNumber correctly identified: {} ({:.2%})'.format(
+                evaluations[i][0],
+                (evaluations[i][0]/sample_cat_counts[i]) ))
+            print(('\tIs the machine learning algorithm useful for this storm '
+                'type? {}').format(chisq_test(sample_cat_counts[i],
+                    evaluations[i][0]+evaluations[i][2])) )
     print()
     print('Storm types not listed were not present in the sample.')
     plt.show()
 
+# Use mlpy's Linear Discriminant Analysis to learn and classify the data.
 def ldac(locations, categories):
-    # Use mlpy's Linear Discriminant Analysis to learn and classify the data.
     ldac = mlpy.LDAC()
     ldac.learn(locations, categories)
 
@@ -132,8 +144,8 @@ def ldac(locations, categories):
 
     return classifications
 
+# Use mlpy's k-Nearest Neighbor to learn and classify the data.
 def knn(locations, categories):
-    # Use mlpy's k-Nearest Neighbor to learn and classify the data.
     knn = mlpy.KNN(k=3)
     knn.learn(locations, categories)
 
@@ -143,4 +155,45 @@ def knn(locations, categories):
 
     return classifications
 
+# This is a chi-squared test to see if the classification of our machine
+# learning algorithm was useful.
+# The null hypothesis is that there is no significant difference between the
+#   algorithm's classification and the actual category each storm belongs to.
+# The alternative hypythesis is that there is a difference, which would make
+#   the algorithm useless.
+def chisq_test(actually_true, predicted_true):
+    alpha = 0.05 # significance level
+    # Calculate the totals.
+    total = SAMPLE_SIZE * 2
+    total_true = actually_true + predicted_true
+    total_false = (SAMPLE_SIZE - actually_true) + (SAMPLE_SIZE - predicted_true)
+
+    # Calculate the expected values.
+    expected_ratio_true = total_true / total
+    expected_actually_true = expected_ratio_true * SAMPLE_SIZE
+    expected_actually_false = SAMPLE_SIZE - expected_ratio_true * SAMPLE_SIZE
+    expected_predicted_true = expected_ratio_true * SAMPLE_SIZE
+    expected_predicted_false = SAMPLE_SIZE - expected_ratio_true * SAMPLE_SIZE
+
+    # Calculate the test statistic.
+    chisquared = ( (actually_true - expected_actually_true)**2 / expected_actually_true
+            + (predicted_true - expected_predicted_true)**2 / expected_predicted_true
+            + (SAMPLE_SIZE - actually_true - expected_actually_false)**2 / expected_actually_false
+            + (SAMPLE_SIZE - predicted_true - expected_predicted_false)**2 / expected_predicted_false )
+
+    # Get the critical value.
+    critical_value = stats.chi2.ppf(1-alpha, df=1)
+
+    # FYI. I'm not sure if this should be in the output or not.
+    print('\tchi-squared statistic: {}'.format(chisquared))
+    print('\tcritical value: {}'.format(critical_value))
+
+    #   If the test statistic is less than the critical value, we accept the
+    # null hypothesis that there is no difference between the predicted and
+    # actual storm category, which means that the machine learning algorithm IS
+    # USEFUL for the type of storm.
+    #   If the test statistic is greater than the critical value, we reject the
+    # null hypothesis and say that there is a difference, which means that the
+    # machine learning algorithm is NOT USEFUL for this type of storm.
+    return chisquared < critical_value
 main()
