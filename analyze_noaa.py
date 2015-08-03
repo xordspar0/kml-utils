@@ -181,19 +181,18 @@ def chisq_test(actually_true, predicted_true):
             + (SAMPLE_SIZE - actually_true - expected_actually_false)**2 / expected_actually_false
             + (SAMPLE_SIZE - predicted_true - expected_predicted_false)**2 / expected_predicted_false )
 
-    # Get the critical value.
-    critical_value = stats.chi2.ppf(1-alpha, df=1)
+    # Get the p-value.
+    pvalue = stats.chi2.sf(chisquared, df=1)
 
     # FYI. I'm not sure if this should be in the output or not.
-    print('\tchi-squared statistic: {}'.format(chisquared))
-    print('\tcritical value: {}'.format(critical_value))
+    print('\tchi-squared statistic: {:.3f}'.format(chisquared))
+    print('\tp-value: {:.3f}'.format(pvalue))
 
-    #   If the test statistic is less than the critical value, we accept the
-    # null hypothesis that there is no difference between the predicted and
-    # actual storm category, which means that the machine learning algorithm IS
-    # USEFUL for the type of storm.
-    #   If the test statistic is greater than the critical value, we reject the
-    # null hypothesis and say that there is a difference, which means that the
-    # machine learning algorithm is NOT USEFUL for this type of storm.
-    return chisquared < critical_value
+    #   If the p-value is large, we accept the null hypothesis that there is no
+    # difference between the predicted and actual storm category, which means
+    # that the machine learning algorithm IS USEFUL for the type of storm.
+    #   If the p-value is small, we reject the null hypothesis and say that
+    # there is a difference, which means that the machine learning algorithm is
+    # NOT USEFUL for this type of storm.
+    return pvalue > alpha
 main()
