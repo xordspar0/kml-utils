@@ -46,7 +46,7 @@ def main():
         sample_cat_counts[categories[choice]] += 1
 
     # Plot the sample data.
-    ax1 = plt.subplot2grid((2,2), (0,0),
+    ax1 = plt.subplot2grid((4,2), (0,0),
             title='Random Sample (n={})'.format(SAMPLE_SIZE))
     ax1.scatter(sample_loc[:, 0:1], sample_loc[:, 1:2], c=sample_cat)
 
@@ -92,14 +92,14 @@ def main():
     evaluations = np.array(evaluations)
 
     # Plot the correctness data.
-    ax2 = plt.subplot2grid((2,2), (0,1),
+    ax2 = plt.subplot2grid((4,2), (0,1),
             title='Correct/Incorrect Classifications')
     ax2.scatter(incorrect_loc[:, 0:1], incorrect_loc[:, 1:2], c='b')
     ax2.scatter(correct_loc[:, 0:1], correct_loc[:, 1:2], c='y')
     ax2.legend(['incorrect', 'correct'])
 
     # Plot the True/False Positives/Negatives.
-    ax3 = plt.subplot2grid((2,2), (1,0), colspan=2,
+    ax3 = plt.subplot2grid((4,2), (1,0), colspan=2,
             title='Classifications For Each Storm Type', xlim=[0,47])
     bar1 = ax3.bar(range(47), evaluations[:, 0], label='True Positives',
             color='cyan')
@@ -135,12 +135,27 @@ def main():
 
 # Use mlpy's Linear Discriminant Analysis to learn and classify the data.
 def ldac(locations, categories):
+    ax = plt.subplot2grid((4,2), (2,0),
+            title='Random Sample (n={})'.format(SAMPLE_SIZE), xlim=[-180,-60], ylim=[10,70])
+
     ldac = mlpy.LDAC()
     ldac.learn(locations, categories)
 
     classifications = np.zeros(SAMPLE_SIZE, np.int)
     for i, storm in enumerate(locations):
         classifications[i] = ldac.pred(storm)
+
+    ax.scatter(locations[:, 0], locations[:, 1], c=classifications)
+
+    x = np.arange(-180,-60)
+    w = ldac.w()
+    b = ldac.bias()
+    for i in range(len(w)):
+        for j in range(len(w)):
+            if i == j:
+                break
+            y = (x* (w[j][0] - w[i][0]) + b[j] - b[i]) / (w[i][1] - w[j][1])
+            ax.plot(x,y,'k--')
 
     return classifications
 
