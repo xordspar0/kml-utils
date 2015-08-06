@@ -13,6 +13,9 @@ import matplotlib.pyplot as plt
 import mlpy
 
 SAMPLE_SIZE = 5000
+MYCOLORS = ['DarkOrange','OliveDrab','Orchid','Orange','Peru','Turquoise',
+            'LightBlue','DarkSeaGreen','Purple','Khaki','DarkSlateBlue',
+            'LimeGreen','Pink','AntiqueWhite','MidnightBlue','WhiteSmoke']
 
 def main():
     # Load the data.
@@ -48,7 +51,8 @@ def main():
     # Plot the sample data.
     ax1 = plt.subplot2grid((4,2), (0,0),
             title='Random Sample (n={})'.format(SAMPLE_SIZE))
-    ax1.scatter(sample_loc[:, 0:1], sample_loc[:, 1:2], c=sample_cat)
+    colormap = [MYCOLORS[x%len(MYCOLORS)] for x in sample_cat]
+    ax1.scatter(sample_loc[:, 0:1], sample_loc[:, 1:2], c=colormap)
 
     # Classify the data
     classifications = ldac(sample_loc, sample_cat)
@@ -136,7 +140,7 @@ def main():
 # Use mlpy's Linear Discriminant Analysis to learn and classify the data.
 def ldac(locations, categories):
     ax = plt.subplot2grid((4,2), (1,0), colspan=2, rowspan=2,
-            title='Classification Lines', xlim=[-180,-60], ylim=[10,70])
+            title='Classification Lines', xlim=[-180,-40], ylim=[10,70])
 
     ldac = mlpy.LDAC()
     ldac.learn(locations, categories)
@@ -145,9 +149,13 @@ def ldac(locations, categories):
     for i, storm in enumerate(locations):
         classifications[i] = ldac.pred(storm)
 
-    ax.scatter(locations[:, 0], locations[:, 1], c=classifications)
+    # Plot the predictions.
+    ## Map the categories to colors
+    colormap = [MYCOLORS[x%len(MYCOLORS)] for x in classifications]
+    ax.scatter(locations[:, 0], locations[:, 1], c=colormap)
+    ax.legend()
 
-    x = np.arange(-180,-60)
+    x = np.arange(-180,-40)
     w = ldac.w()
     b = ldac.bias()
     for i in range(len(w)):
