@@ -12,7 +12,7 @@ from scipy import stats
 import matplotlib.pyplot as plt
 import mlpy
 
-SAMPLE_SIZE = 500
+SAMPLE_SIZE = 5000
 
 def main():
     # Load the data.

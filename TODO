@@ -1,3 +1,7 @@
+[X] Finish the plot layout of analyze_noaa.py
+[X] Post a new example to the website
+[ ] Write a report to Anne Denton about LDA's (non)usefulness
+
 ## Bugs and Improvements ##
 
 [X]	eliminate false positives when checking the option argument in both scripts
