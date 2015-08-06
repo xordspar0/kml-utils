@@ -15,14 +15,8 @@ import mlpy
 SAMPLE_SIZE = 5000
 MYCOLORS = ['DarkOrange','OliveDrab','Orchid','Orange','Peru','Turquoise',
             'LightBlue','DarkSeaGreen','Purple','Khaki','DarkSlateBlue',
-            'LimeGreen','Pink','AntiqueWhite','MidnightBlue','WhiteSmoke']
-
-def main():
-    # Load the data.
-    data = np.loadtxt('data/StormEvents_combined_d2010.csv', delimiter='\t')
-    locations = np.hstack((data[:, 2:3], data[:, 1:2]))
-    categories = np.array(data[:, 3], dtype=np.int)
-    event_types = ['ASTRONOMICAL LOW TIDE', 'AVALANCHE', 'BLIZZARD',
+            'LimeGreen','Pink','FireBrick','MidnightBlue','WhiteSmoke']
+EVENT_TYPES = ['ASTRONOMICAL LOW TIDE', 'AVALANCHE', 'BLIZZARD',
             'COASTAL FLOOD', 'COLD/WIND CHILL', 'DEBRIS FLOW', 'DENSE FOG',
             'DENSE SMOKE', 'DROUGHT', 'DUST DEVIL', 'DUST STORM', 'EXCESSIVE HEAT',
             'EXTREME COLD/WIND CHILL', 'FLASH FLOOD', 'FLOOD', 'FROST/FREEZE',
@@ -35,12 +29,18 @@ def main():
             'TROPICAL DEPRESSION', 'TROPICAL STORM', 'TSUNAMI', 'VOLCANIC ASH',
             'WATERSPOUT', 'WILDFIRE', 'WINTER STORM', 'WINTER WEATHER']
 
+def main():
+    # Load the data.
+    data = np.loadtxt('data/StormEvents_combined_d2010.csv', delimiter='\t')
+    locations = np.hstack((data[:, 2:3], data[:, 1:2]))
+    categories = np.array(data[:, 3], dtype=np.int)
+
     # Take a random sample and perform an LDA analysis.
     np.random.seed(0)
     sample_choice = np.random.choice(range(len(data)), size=SAMPLE_SIZE)
     sample_loc = np.zeros((SAMPLE_SIZE, 2))
     sample_cat = np.zeros(SAMPLE_SIZE, np.int)
-    sample_cat_counts = np.zeros(len(event_types), np.int)
+    sample_cat_counts = np.zeros(len(EVENT_TYPES), np.int)
 
     for i, choice in enumerate(sample_choice):
         sample_loc[i][0] = locations[choice][0]
@@ -65,7 +65,7 @@ def main():
     # The evaluations array contains the total number of True Positives (0),
     # True Negatives (1), False Positives (2), and False Negatives (3) for each
     # event type:
-    evaluations = np.zeros((len(event_types), 4), np.int)
+    evaluations = np.zeros((len(EVENT_TYPES), 4), np.int)
     for i, classification in enumerate(classifications):
         if classification == sample_cat[i]:
             correct_total += 1
@@ -74,7 +74,7 @@ def main():
             incorrect_loc.append(sample_loc[i])
 
         # Positive
-        for event_type_index, event_type in enumerate(event_types):
+        for event_type_index, event_type in enumerate(EVENT_TYPES):
             if classification == event_type_index:
                 # True
                 if sample_cat[i] == event_type_index:
@@ -123,7 +123,7 @@ def main():
             correct_total, (correct_total/SAMPLE_SIZE) ))
     print()
     # Show stats for each storm type and do a chi-squared test.
-    for i, event_type in enumerate(event_types):
+    for i, event_type in enumerate(EVENT_TYPES):
         if sample_cat_counts[i] > 0:
             print('{} (#{}):'.format(event_type, i))
             print('\tTotal number: {}'.format(sample_cat_counts[i]))
@@ -151,9 +151,19 @@ def ldac(locations, categories):
 
     # Plot the predictions.
     ## Map the categories to colors
-    colormap = [MYCOLORS[x%len(MYCOLORS)] for x in classifications]
-    ax.scatter(locations[:, 0], locations[:, 1], c=colormap)
-    ax.legend()
+    for event_type_index in range(len(EVENT_TYPES)):
+        this_predicted_category = []
+        for i in range(SAMPLE_SIZE):
+            if classifications[i] == event_type_index:
+                this_predicted_category.append(locations[i])
+        if not this_predicted_category:
+            continue
+        this_predicted_category = np.array(this_predicted_category)
+        ax.scatter(this_predicted_category[:, 0], this_predicted_category[:, 1],
+                label=EVENT_TYPES[event_type_index],
+                c=MYCOLORS[event_type_index%len(MYCOLORS)])
+
+    ax.legend(loc=2)
 
     x = np.arange(-180,-40)
     w = ldac.w()
