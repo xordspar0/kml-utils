@@ -99,7 +99,7 @@ def main():
     ax2.legend(['incorrect', 'correct'])
 
     # Plot the True/False Positives/Negatives.
-    ax3 = plt.subplot2grid((4,2), (1,0), colspan=2,
+    ax3 = plt.subplot2grid((4,2), (3,0), colspan=2,
             title='Classifications For Each Storm Type', xlim=[0,47])
     bar1 = ax3.bar(range(47), evaluations[:, 0], label='True Positives',
             color='cyan')
@@ -135,8 +135,8 @@ def main():
 
 # Use mlpy's Linear Discriminant Analysis to learn and classify the data.
 def ldac(locations, categories):
-    ax = plt.subplot2grid((4,2), (2,0),
-            title='Random Sample (n={})'.format(SAMPLE_SIZE), xlim=[-180,-60], ylim=[10,70])
+    ax = plt.subplot2grid((4,2), (1,0), colspan=2, rowspan=2,
+            title='Classification Lines', xlim=[-180,-60], ylim=[10,70])
 
     ldac = mlpy.LDAC()
     ldac.learn(locations, categories)
