@@ -130,9 +130,10 @@ def main():
             print('\tNumber correctly identified: {} ({:.2%})'.format(
                 evaluations[i][0],
                 (evaluations[i][0]/sample_cat_counts[i]) ))
-            print(('\tIs the machine learning algorithm useful for this storm '
-                'type? {}').format(chisq_test(sample_cat_counts[i],
-                    evaluations[i][0]+evaluations[i][2])) )
+            print(('\tchi-squared statistic: {:.3f}\n'
+                   '\tp-value: {:.3f}\n'
+                   '\tIs the machine learning algorithm useful for this storm '
+                   'type? {}').format(*chisq_test(*evaluations[i])) )
     print()
     print('Storm types not listed were not present in the sample.')
     plt.show()
@@ -190,42 +191,36 @@ def knn(locations, categories):
 
 # This is a chi-squared test to see if the classification of our machine
 # learning algorithm was useful.
-# The null hypothesis is that there is no significant difference between the
-#   algorithm's classification and the actual category each storm belongs to.
-# The alternative hypythesis is that there is a difference, which would make
-#   the algorithm useless.
-def chisq_test(actually_true, predicted_true):
+# Contingency table:
+#            _______predicted___ 
+#           |   |___T___|___F___|
+#  actually | T |__TP___|__FN___|
+#           |_F_|__FP___|__TN___|
+#
+def chisq_test(true_positives, true_negatives, false_positives, false_negatives):
     alpha = 0.05 # significance level
     # Calculate the totals.
-    total = SAMPLE_SIZE * 2
-    total_true = actually_true + predicted_true
-    total_false = (SAMPLE_SIZE - actually_true) + (SAMPLE_SIZE - predicted_true)
+    total_actually_true = true_positives + false_negatives
+    total_actually_false = false_positives + true_negatives
+    total_predicted_true = true_positives + false_positives
+    total_predicted_false = true_negatives + false_negatives
+    total = total_predicted_true + total_predicted_false
 
     # Calculate the expected values.
-    expected_ratio_true = total_true / total
-    expected_actually_true = expected_ratio_true * SAMPLE_SIZE
-    expected_actually_false = SAMPLE_SIZE - expected_ratio_true * SAMPLE_SIZE
-    expected_predicted_true = expected_ratio_true * SAMPLE_SIZE
-    expected_predicted_false = SAMPLE_SIZE - expected_ratio_true * SAMPLE_SIZE
+    expected_true_positives = (total_predicted_true * total_actually_true) / total
+    expected_false_positives = (total_predicted_true * total_actually_false) / total
+    expected_false_negatives = (total_predicted_false * total_actually_true) / total
+    expected_true_negatives = (total_predicted_false * total_actually_false) / total
 
     # Calculate the test statistic.
-    chisquared = ( (actually_true - expected_actually_true)**2 / expected_actually_true
-            + (predicted_true - expected_predicted_true)**2 / expected_predicted_true
-            + (SAMPLE_SIZE - actually_true - expected_actually_false)**2 / expected_actually_false
-            + (SAMPLE_SIZE - predicted_true - expected_predicted_false)**2 / expected_predicted_false )
+    chisquared = ( (true_positives - expected_true_positives)**2 / expected_true_positives
+            + (false_positives - expected_false_positives)**2 / expected_false_positives
+            + (false_negatives - expected_false_negatives)**2 / expected_false_negatives
+            + (true_negatives - expected_true_negatives)**2 / expected_true_negatives )
 
     # Get the p-value.
     pvalue = stats.chi2.sf(chisquared, df=1)
+    significance = pvalue < alpha
 
-    # FYI. I'm not sure if this should be in the output or not.
-    print('\tchi-squared statistic: {:.3f}'.format(chisquared))
-    print('\tp-value: {:.3f}'.format(pvalue))
-
-    #   If the p-value is large, we accept the null hypothesis that there is no
-    # difference between the predicted and actual storm category, which means
-    # that the machine learning algorithm IS USEFUL for the type of storm.
-    #   If the p-value is small, we reject the null hypothesis and say that
-    # there is a difference, which means that the machine learning algorithm is
-    # NOT USEFUL for this type of storm.
-    return pvalue > alpha
+    return (chisquared, pvalue, significance)
 main()
