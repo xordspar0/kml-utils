@@ -220,7 +220,13 @@ def chisq_test(true_positives, true_negatives, false_positives, false_negatives)
 
     # Get the p-value.
     pvalue = stats.chi2.sf(chisquared, df=1)
-    significance = pvalue < alpha
+
+    # A high p-value means that we accept the null hypothesis that there is no
+    # difference between the actual and observed results. A low p-value means
+    # that there is enough evidence to reject the null hypothesis and conclude
+    # that there is a difference between the actual and observed results, which
+    # means that the machine learning algorithm is not useful.
+    significance = pvalue > alpha
 
     return (chisquared, pvalue, significance)
 main()
