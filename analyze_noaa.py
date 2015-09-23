@@ -104,15 +104,15 @@ def main():
 
     # Plot the True/False Positives/Negatives.
     ax3 = plt.subplot2grid((4,2), (3,0), colspan=2,
-            title='Classifications For Each Storm Type', xlim=[0,47])
-    bar1 = ax3.bar(range(47), evaluations[:, 0], label='True Positives',
-            color='cyan')
-    bar2 = ax3.bar(range(47), evaluations[:, 3], label='False Negatives',
-            color='purple', bottom=evaluations[:, 0])
-    bar3 = ax3.bar(range(47), evaluations[:, 2], label='False Positives',
-            color='gray', bottom=evaluations[:, 0] + evaluations[:, 3])
-    bar4 = ax3.bar(range(47), evaluations[:, 1], label='True Negatives',
-            color='black', bottom=(evaluations[:, 0] + evaluations[:, 3]
+            title='Classifications For Each Storm Type', xlim=[0,48])
+    bar1 = ax3.bar(range(1,48), evaluations[:, 0], label='True Positives',
+            color='cyan', align='center')
+    bar2 = ax3.bar(range(1,48), evaluations[:, 3], label='False Negatives',
+            color='purple', align='center', bottom=evaluations[:, 0])
+    bar3 = ax3.bar(range(1,48), evaluations[:, 2], label='False Positives',
+            color='gray', align='center', bottom=evaluations[:, 0] + evaluations[:, 3])
+    bar4 = ax3.bar(range(1,48), evaluations[:, 1], label='True Negatives',
+            color='black', align='center', bottom=(evaluations[:, 0] + evaluations[:, 3]
                 + evaluations[:, 2]))
     handles, labels = ax3.get_legend_handles_labels()
     ax3.legend(handles[::-1], labels[::-1], loc=2)
@@ -125,7 +125,7 @@ def main():
     # Show stats for each storm type and do a chi-squared test.
     for i, event_type in enumerate(EVENT_TYPES):
         if sample_cat_counts[i] > 0:
-            print('{} (#{}):'.format(event_type, i))
+            print('{} (#{}):'.format(event_type, i+1))
             print('\tTotal number: {}'.format(sample_cat_counts[i]))
             print('\tNumber correctly identified: {} ({:.2%})'.format(
                 evaluations[i][0],
